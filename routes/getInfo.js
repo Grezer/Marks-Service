@@ -7,6 +7,7 @@ const {
 } = require('../lib/logger')
 
 //Получение предметов и групп по fio препода
+/*
 router.route('/getLessons/:fio').get((req, res, next) => {
   pool_asr.connect(err => {
     if (err) res.sendStatus(400)
@@ -39,6 +40,72 @@ router.route('/getLessons/:fio').get((req, res, next) => {
     )
   })
 })
+*/
+
+
+// Получение списка одногруппников
+router.route('/getClassMates/:group').get((req, res, next) => {
+  pool_asr.connect(err => {
+    if (err) res.sendStatus(400)
+    const request = new sql.Request(pool_asr)
+    request.input('group', sql.NVarChar, `${req.params.group}`)
+    request.query(
+      `  
+      Select Код, Полное_Имя, Группа
+      From [UniversityPROF].[dbo].[су_ИнформацияОСтудентах]
+      Where Группа = @group and Статус != 'ЗКЗакрыта' and Статус = 'Является студентом'
+    `,
+      (err, result) => {
+        if (err) {
+          logger.log('error', 'Get group schedule error', {
+            err
+          })
+          res.sendStatus(400)
+        }
+
+        logger.log('info', 'Get group schedule success', {
+          result: req.params.fio
+        })
+
+        pool_asr.close()
+        res.send(result.recordset)
+      }
+    )
+  })
+})
+
+router.route('/getLesson/:group').get((req, res, next) => {
+  console.log(req.params.group);
+  pool_asr.connect(err => {
+    if (err) res.sendStatus(400)
+    console.log(req.params.group)
+    const request = new sql.Request(pool_asr)
+    request.input('group', sql.NVarChar, `${req.params.group}`)
+    request.query(
+      `  
+      Select distinct _Subject, _Subject_Type
+      FROM [UniASR].[dbo].[аср_Расписание]
+      Where _Group = @group
+    `,
+      (err, result) => {
+        if (err) {
+          logger.log('error', 'Get group schedule error', {
+            err
+          })
+          res.sendStatus(400)
+        }
+
+        logger.log('info', 'Get group schedule success', {
+          result: req.params.fio
+        })
+
+        pool_asr.close()
+        res.send(result.recordset)
+      }
+    )
+  })
+})
+
 
 //Получение контрольных точек
 router.get('/getControlPoints/:lesson/:group/:type', (req, res, next) => {
