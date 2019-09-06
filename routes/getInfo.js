@@ -2,10 +2,9 @@ const router = require('express').Router()
 const sql = require('mssql')
 const pool_mdb = require('../config/config_mdb')
 const pool_asr = require('../config/config_asr')
-const {
-  logger
-} = require('../lib/logger')
+const { logger } = require('../lib/logger')
 
+//just for start drone
 //Получение предметов и групп по fio препода
 /*
 router.route('/getLessons/:fio').get((req, res, next) => {
@@ -42,7 +41,6 @@ router.route('/getLessons/:fio').get((req, res, next) => {
 })
 */
 
-
 // Получение списка одногруппников
 router.route('/getClassMates/:group').get((req, res, next) => {
   pool_asr.connect(err => {
@@ -75,7 +73,7 @@ router.route('/getClassMates/:group').get((req, res, next) => {
 })
 
 router.route('/getLesson/:group').get((req, res, next) => {
-  console.log(req.params.group);
+  console.log(req.params.group)
   pool_asr.connect(err => {
     if (err) res.sendStatus(400)
     console.log(req.params.group)
@@ -106,15 +104,14 @@ router.route('/getLesson/:group').get((req, res, next) => {
   })
 })
 
-
 //Получение контрольных точек
 router.get('/getControlPoints/:lesson/:group/:type', (req, res, next) => {
   pool_mdb.getConnection((err, con) => {
     if (err) throw err
 
-    const lesson = req.params.lesson;
-    const group = req.params.group;
-    const type = req.params.type;
+    const lesson = req.params.lesson
+    const group = req.params.group
+    const type = req.params.type
     console.log(req.params.lesson)
     console.log(req.params.group)
     console.log(req.params.type)
@@ -129,7 +126,7 @@ router.get('/getControlPoints/:lesson/:group/:type', (req, res, next) => {
         if (error) throw error
 
         res.setHeader('Content-Type', 'application/json')
-        console.log(result);
+        console.log(result)
         res.send(result)
       }
     )
