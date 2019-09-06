@@ -2,7 +2,9 @@ const router = require('express').Router()
 const sql = require('mssql')
 const pool_mdb = require('../config/config_mdb')
 const pool_asr = require('../config/config_asr')
-const { logger } = require('../lib/logger')
+const {
+  logger
+} = require('../lib/logger')
 
 //just for start drone
 //Получение предметов и групп по fio препода
@@ -127,6 +129,24 @@ router.get('/getControlPoints/:lesson/:group/:type', (req, res, next) => {
 
         res.setHeader('Content-Type', 'application/json')
         console.log(result)
+        res.send(result)
+      }
+    )
+    con.release()
+  })
+})
+
+router.get('/getLastControlPoint', (req, res, next) => {
+  pool_mdb.getConnection((err, con) => {
+    if (err) throw err
+    con.query(
+      `  
+        Select MAX(id) From control_points
+      `,
+      (error, result) => {
+        if (error) throw error
+
+        res.setHeader('Content-Type', 'application/json')
         res.send(result)
       }
     )

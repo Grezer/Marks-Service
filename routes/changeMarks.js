@@ -57,41 +57,19 @@ router.post('/addControlPoints', (req, res, next) => {
 router.post('/addMark', (req, res, next) => {
   pool_mdb.getConnection((err, con) => {
     if (err) throw err
-    const lesson_date = today().now
-    const lesson = req.body.lesson
-    const id_type_control_points = req.body.id_type_control_points
-    const id_type_marks = req.body.id_type_marks
-    const name = req.body.name
-    const oneCcode_teacher = req.body.oneCcode_teacher
-    const n_group = req.body.n_group
-    const type_lesson = req.body.type_lesson
-    const confirmation = req.body.confirmation
-
-    console.log(lesson_date);
-    console.log(lesson);
-    console.log(id_type_control_points);
-    console.log(id_type_marks);
-    console.log(name);
-    console.log(oneCcode_teacher);
-    console.log(n_group);
-    console.log(type_lesson);
-    console.log(confirmation);
+    const oneCcode_student = req.body.oneCcode_student
+    const id_control_points = req.body.id_control_points
+    const mark = req.body.mark
 
     con.query(
       `  
-        INSERT INTO control_points (lesson_date, lesson, id_type_control_points, id_type_marks, name, oneCcode_teacher, n_group, type_lesson, confirmation) 
-        VALUES (?,?,?,?,?,?,?,?,?)   
+        INSERT INTO marks (oneCcode_student, id_control_points, mark) 
+        VALUES (?,?,?)   
       `,
       [
-        lesson_date,
-        lesson,
-        id_type_control_points,
-        id_type_marks,
-        name,
-        oneCcode_teacher,
-        n_group,
-        type_lesson,
-        confirmation
+        oneCcode_student,
+        id_control_points,
+        mark
       ],
       (error, result) => {
         if (error) throw error
@@ -101,8 +79,6 @@ router.post('/addMark', (req, res, next) => {
     con.release()
   })
 })
-
-
 
 function today() {
   let currentTime = new Date()
