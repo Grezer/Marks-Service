@@ -62,8 +62,9 @@ steps:
       - SSL_PASS
     commands:
       - docker build -t nick/marks_service .
+      docker rmi -f $(docker images -f "dangling=true" -q) || true
       - docker container stop marks_service || true && docker rm marks_service || true
-      - docker run -v /home/marks_service_logs:/home/node/marks_service/logs -v /home/ssl:/home/node/marks_service/ssl -e NODE_ENV=$NODE_ENV -e DB_USER=$DB_USER -e DB_PASS=$DB_PASS -e DB_SERVER=$DB_SERVER -e DB_DATABASE=$DB_DATABASE -e DB_1C_USER=$DB_1C_USER -e DB_1C_PASS=$DB_1C_PASS -e DB_1C_SERVER=$DB_1C_SERVER -e DB_1C_DATABASE=$DB_1C_DATABASE -e DB_1C_DATABASE_PROF=$DB_1C_DATABASE_PROF -p 8451:3000 -d --restart="always" --name=marks_service nick/marks_service
+      - docker run -v /home/marks_service_logs:/home/node/marks_service/logs -v /home/ssl:/home/node/marks_service/ssl -e NODE_ENV=$NODE_ENV -e DB_USER=$DB_USER -e DB_PASS=$DB_PASS -e DB_SERVER=$DB_SERVER -e DB_DATABASE=$DB_DATABASE -e DB_1C_USER=$DB_1C_USER -e DB_1C_PASS=$DB_1C_PASS -e DB_1C_SERVER=$DB_1C_SERVER -e DB_1C_DATABASE=$DB_1C_DATABASE -e DB_1C_DATABASE_PROF=$DB_1C_DATABASE_PROF -p 8451:8451 -d --net="host" --restart="always" --name=marks_service nick/marks_service
 
   - name: telegram
     image: appleboy/drone-telegram:latest
