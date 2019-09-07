@@ -65,6 +65,9 @@ if (!isProduction) {
 
 // http
 if (process.env.NODE_ENV === 'development') {
+  logger.log('info', 'dev env', {
+    env: process.env,
+  })
   let server = app.listen(process.env.PORT || 3000, function() {
     console.log('Listening on port ' + server.address().port)
   })
@@ -73,6 +76,10 @@ if (process.env.NODE_ENV === 'development') {
     key: fs.readFileSync('./ssl/server.key'),
     cert: fs.readFileSync('./ssl/server.cer'),
   }
+
+  logger.log('info', 'prod env', {
+    env: process.env,
+  })
 
   https.createServer(sslOptions, app).listen(process.env.PORT || 3000, () => {
     console.log(`Listening on ${process.env.PORT}`)
