@@ -74,8 +74,8 @@ router.route('/getClassMates/:group').get((req, res, next) => {
 
   nowDay = 1
   numberPair = 1
+  //let nowPair
 
-  let nowPair
 
   pool.connect(err => {
     if (err) res.sendStatus(400)
@@ -85,38 +85,76 @@ router.route('/getClassMates/:group').get((req, res, next) => {
     request.input('nowDay', sql.NVarChar, `${nowDay}`)
     request.query(
       `  
-      Select _Subject_ID as id_subject, _Subject_Type as type_subject
-      From [UniASR].[dbo].аср_Расписание
-      where Day_Number = @nowDay and Lesson_ID = @pair and _Group = @group and Schedule_Number = 5
-    `,
+          Select _Subject_ID as id_subject, _Subject_Type as type_subject
+          From [UniASR].[dbo].аср_Расписание
+          where Day_Number = @nowDay and Lesson_ID = @pair and _Group = @group and Schedule_Number = 5
+        `,
       (err, result) => {
         if (err) {
           res.sendStatus(400)
         }
-        nowPair = result.recordset
+        if (result.recordset.length) {
+          findPoint(result.recordset);
+        } else {
+          res.send({
+            "Error": "No classes right now"
+          });
+        }
         pool.close()
       }
     )
-  })
+  });
 
-  pool_mdb.getConnection((err, con) => {
-    if (err) throw err
-    con.query(
-      `
-    Select *
-    From attendance
-    Where n_group = ? and id_subject = ? and type_subject = ? and date_lesson = ?
-    `,
-      [req.params.group, nowPair.id_subject, nowPair.type_subject, moment().format('yyyy-mm-dd')],
-      (error, result) => {
-        if (error) throw error
-        res.sendStatus(200)
-        res.send(result.recordset)
+  function findPoint(nowPair) {
+    pool_mdb.getConnection((err, con) => {
+      if (err) throw err
+      con.query(
+        `
+      Select *
+      From attendance
+      Where n_group = ? and id_subject = ? and type_subject = ? and date_lesson = ?
+      `,
+        [req.params.group, nowPair[0].id_subject, nowPair[0].type_subject, moment().format('YYYY-MM-DD')],
+        (error, result) => {
+          if (error) throw error
+          //res.sendStatus(200)   
+          if (!result[0]) {
+            //create point
+          } else {
+            //result[0].id
+            //Вернуть список одногруппников + id 
+          }
+          res.send(result[0])
+        }
+      )
+      con.release()
+    })
+  }
+
+  function getClassmates(id) {
+    if (err) res.sendStatus(400)
+    const request = new sql.Request(pool)
+    request.input('group', sql.NVarChar, `${req.params.group}`)
+    request.input('id', sql.NVarChar, `${id}`)
+    request.query(
+      `  
+        Select Ссылка, Код, Полное_Имя, Группа
+        From [UniversityPROF].[dbo].[су_ИнформацияОСтудентах]
+        Where Группа = @group and Статус != 'ЗКЗакрыта' and Статус = 'Является студентом'
+        `,
+      (err, result) => {
+        if (err) {
+          res.sendStatus(400)
+        }
+        if (result.recordset.length) {
+
+        }
+        pool.close()
       }
     )
-    con.release()
-  })
-})
+  }
+});
+
 
 
 router.post('/add', (req, res, next) => {
@@ -125,7 +163,7 @@ router.post('/add', (req, res, next) => {
     req.body.peoples.forEach(element => {
       con.query(
         `  
-          INSERT INTO attendance_marks (oneCcode_student, id_attendance, mark) 
+          INSERT INTO attendance_marks (oneCcode, id_attendance, mark) 
           VALUES (?,?,?)   
         `,
         [
@@ -135,7 +173,6 @@ router.post('/add', (req, res, next) => {
         ],
         (error, result) => {
           if (error) throw error
-          console.log('error: ', error);
         }
       )
     });
