@@ -36,5 +36,6 @@ router.use(
 router.use('/api/viewMarks', require('./viewMarks'));
 router.use('/api/changeMarks', require('./changeMarks'));
 router.use('/api/getInfo', require('./getInfo'));
+router.use('/api/attendance', require('./attendance'));
 
 module.exports = router;

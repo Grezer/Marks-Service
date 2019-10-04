@@ -80,6 +80,32 @@ router.post('/addMark', (req, res, next) => {
   })
 })
 
+router.post('/nowPair', (req, res, next) => {
+  pool_mdb.getConnection((err, con) => {
+    if (err) throw err
+    const oneCcode_student = req.body.oneCcode_student
+    const id_control_points = req.body.id_control_points
+    const mark = req.body.mark
+
+    con.query(
+      `  
+        INSERT INTO marks (oneCcode_student, id_control_points, mark) 
+        VALUES (?,?,?)   
+      `,
+      [
+        oneCcode_student,
+        id_control_points,
+        mark
+      ],
+      (error, result) => {
+        if (error) throw error
+        res.sendStatus(200)
+      }
+    )
+    con.release()
+  })
+})
+
 function today() {
   let currentTime = new Date()
   let dd = currentTime.getDate()

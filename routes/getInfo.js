@@ -19,7 +19,7 @@ router.route('/getLessons/:fio').get((req, res, next) => {
       `  
       Select Lecturer, _Subject, _Group, _Subject_Type
       From [UniASR].[dbo].[аср_Расписание]
-      Where Period_ID = 0x81856C626D51EA7011E8FC4EE009EED7 and _Subject_Type != 'Лабораторные работы' and Lecturer like @fio
+      Where Period_ID = 0x818156C626D51EA7011E8FC4EE009EED7 and _Subject_Type != 'Лабораторные работы' and Lecturer like @fio
       Group by _Group, _Subject_Type, Lecturer, _Subject
       Order by Lecturer
     `,
