@@ -1,17 +1,34 @@
 const router = require('express').Router()
 const moment = require('moment')
-const getNowPair = require('../config/attendanceFunctions')
+const {
+  getNowPair,
+  findPoint
+} = require('../config/attendanceFunctions')
 const pool_mdb = require('../config/config_mdb')
 const pool = require('../config/config_universityPROF')
 const sql = require('mssql')
 
-const test = async () => {
+const run = async (group, pair, day) => {
+  const getPairResult = await getNowPair({
+    group,
+    pair,
+    day
+  });
+  console.log('getPairResult: ', getPairResult);
+  if (!getPairResult) return "No pairs right now";
+
+
+
+
+
+
+
   /*
   await getNowPair
   await getNowPair
   await getNowPair
   */
-  return true
+  return getPairResult
 }
 
 router.route('/getClassMates/:group').get((req, res, next) => {
@@ -25,12 +42,6 @@ router.route('/getClassMates/:group').get((req, res, next) => {
   if (moment().isBetween(moment('17:40', 'h:mm'), moment('18:50', 'h:mm'))) numberPair = 6
   if (moment().isBetween(moment('19:20', 'h:mm'), moment('20:30', 'h:mm'))) numberPair = 7
   */
-
-  test().then(res => {
-    // res === true
-  }).catch(err => {
-    // err
-  })
 
   const obj = {
     1: {
@@ -85,7 +96,18 @@ router.route('/getClassMates/:group').get((req, res, next) => {
     });
   }
 
-  const nowDay = moment().weekday() % 2 ? moment().weekday() + 7 : moment().weekday();
+  numberOfPair = 1;
+  const nowDay = 1; //moment().weekday() % 2 ? moment().weekday() + 7 : moment().weekday();
+
+
+  const something = run(req.params.group, numberOfPair, nowDay).then(result => {
+    //console.log('something: ', result);
+    //console.log(result);
+    // res === true
+  }).catch(err => {
+    // err
+  })
+
 
 
 
@@ -152,22 +174,6 @@ router.route('/getClassMates/:group').get((req, res, next) => {
   })
   */
 
-  const findPoint = async nowPair => {
-    const result = await pool_mdb.query(
-      `
-      Select *
-      From attendance
-      Where n_group = ? and id_subject = ? and type_subject = ? and date_lesson = ?
-      `,
-      [
-        req.params.group,
-        nowPair[0].id_subject,
-        nowPair[0].type_subject,
-        moment().format('YYYY-MM-DD')
-      ]
-    );
-    return result[0][0];
-  }
 
 
 
