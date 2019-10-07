@@ -4,13 +4,14 @@ const {
   getNowPair,
   findPoint,
   createPoint,
-  getClassmates
+  getClassmates,
+  addMarks
 } = require('../config/attendanceFunctions')
 const pool_mdb = require('../config/config_mdb')
 const pool = require('../config/config_universityPROF')
 const sql = require('mssql')
 
-const run = async (group, pair, day) => {
+const getOrCreatePoint = async (group, pair, day) => {
   const [getPairResult] = await getNowPair({
     group,
     pair,
@@ -27,43 +28,35 @@ const run = async (group, pair, day) => {
     type_subject
   });
 
-
   if (!findPointResult) {
     const createPointResult = await createPoint({
       group,
       id_subject,
       type_subject
     })
-    //createPointResult.insertId
-    //console.log('createPointResult: ', createPointResult.insertId);
-    //getclassmates
-  } else {
-    id_point = findPointResult.id;
+    id_lesson = createPointResult.insertId
     const classmates = await getClassmates({
       group,
-      id_point
+      id_lesson
     })
-    console.log('classmates: ', classmates);
+    return classmates;
+  } else {
+    id_lesson = findPointResult.id
+    const classmates = await getClassmates({
+      group,
+      id_lesson
+    })
+    return classmates;
   }
+}
 
-
-  //return classmates and id point
-
-
-
-
-
-
-
-
-
-
-  /*
-  await getNowPair
-  await getNowPair
-  await getNowPair
-  */
-  return getPairResult[0]
+const postMarks = async (oneCcode, id_attendance, mark) => {
+  await addMarks({
+    oneCcode,
+    id_attendance,
+    mark
+  });
+  return true;
 }
 
 router.route('/getClassMates/:group').get((req, res, next) => {
@@ -137,11 +130,8 @@ router.route('/getClassMates/:group').get((req, res, next) => {
   const nowDay = 1; //moment().weekday() % 2 ? moment().weekday() + 7 : moment().weekday();
 
 
-  const something = run(req.params.group, numberOfPair, nowDay).then(result => {
-    //console.log('result: ', result);
+  startInitAttendance = getOrCreatePoint(req.params.group, numberOfPair, nowDay).then(result => {
     res.send(result);
-    //console.log(result);
-    // res === true
   }).catch(err => {
     res.send(err);
   })
@@ -274,22 +264,51 @@ router.route('/getClassMates/:group').get((req, res, next) => {
 })
 
 router.post('/add', (req, res, next) => {
+  const id_lesson = req.body.id_lesson
+  //oneCcode, id_attendance, mark
+  req.body.peoples.forEach(element => {
+    asd = postMarks(element.oneCcode, id_lesson, element.mark)
+      .then(result => {
+
+      }).catch(err => {
+        res.send(err);
+      })
+  });
+  res.sendStatus(200);
+
+
+
+  /*
+    asd = postMarks(req).then(result => {
+      res.send(result);
+    }).catch(err => {
+      res.send(err);
+    })
+    */
+
+  /*
   pool_mdb.getConnection((err, con) => {
     if (err) throw EvalError
+    const id_attendance = req.body.id_point;
+    console.log('id_attendance: ', id_attendance);
+
     req.body.peoples.forEach(element => {
       con.query(
         `  
           INSERT INTO attendance_marks (oneCcode, id_attendance, mark) 
           VALUES (?,?,?)   
         `,
-        [element.oneCcode, element.id_attendance, element.mark],
+        [element.oneCcode, id_attendance, element.mark],
         (error, result) => {
           if (error) throw error
+          res.sendStatus(200);
         }
       )
     })
     con.release()
   })
+*/
+
 })
 
 module.exports = router

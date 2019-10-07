@@ -1,7 +1,7 @@
-const moment = require('moment')
-const pool_mdb = require('../config/config_mdb')
-const pool = require('../config/config_universityPROF')
-const sql = require('mssql')
+const moment = require('moment');
+const pool_mdb = require('../config/config_mdb');
+const pool = require('../config/config_universityPROF');
+const sql = require('mssql');
 
 const getNowPair = async ({
   group,
@@ -12,10 +12,10 @@ const getNowPair = async ({
     try {
       pool.connect(err => {
         if (err) res.sendStatus(400);
-        const request = new sql.Request(pool)
-        request.input('group', sql.NVarChar, `${group}`)
-        request.input('pair', sql.NVarChar, `${pair}`)
-        request.input('nowDay', sql.NVarChar, `${day}`)
+        const request = new sql.Request(pool);
+        request.input('group', sql.NVarChar, `${group}`);
+        request.input('pair', sql.NVarChar, `${pair}`);
+        request.input('nowDay', sql.NVarChar, `${day}`);
         request.query(
           `  
           Select _Subject_ID as id_subject, _Subject_Type as type_subject
@@ -30,22 +30,21 @@ const getNowPair = async ({
             pool.close();
             //console.log(result.recordset);
             resolve(result.recordset);
-          }
+          },
         );
       });
     } catch (err) {
-      reject(err)
+      reject(err);
       //console.log('err: ', err);
     }
-  })
-}
+  });
+};
 
 const findPoint = async ({
   group,
   id_subject,
   type_subject
 }) => {
-
   try {
     const [
       [result]
@@ -55,18 +54,13 @@ const findPoint = async ({
         From attendance
         Where n_group = ? and id_subject = ? and type_subject = ? and date_lesson = ?
         `,
-      [
-        group,
-        id_subject,
-        type_subject,
-        moment().format('YYYY-MM-DD')
-      ]
+      [group, id_subject, type_subject, moment().format('YYYY-MM-DD')],
     );
-    return (result);
+    return result;
   } catch (err) {
-    return (err)
+    return err;
   }
-}
+};
 
 const createPoint = async ({
   group,
@@ -82,29 +76,24 @@ const createPoint = async ({
         INSERT into attendance (n_group, id_subject, type_subject, date_lesson) 
         VALUES(?, ?, ?, ?);
         `,
-      [
-        group,
-        id_subject,
-        type_subject,
-        moment().format('YYYY-MM-DD')
-      ]
+      [group, id_subject, type_subject, moment().format('YYYY-MM-DD')],
     );
-    return (result);
+    return result;
   } catch (err) {
-    return (err)
+    return err;
   }
-}
+};
 
 const getClassmates = async ({
   group,
-  id_point
+  id_lesson
 }) => {
   return new Promise(function (resolve, reject) {
     try {
       pool.connect(err => {
         if (err) res.sendStatus(400);
-        const request = new sql.Request(pool)
-        request.input('group', sql.NVarChar, `${group}`)
+        const request = new sql.Request(pool);
+        request.input('group', sql.NVarChar, `${group}`);
         request.query(
           `  
             Select Код as oneCcode, Полное_Имя as Fio
@@ -118,7 +107,7 @@ const getClassmates = async ({
             }
             pool.close();
             //console.log(result.recordset);
-
+            /*
             let finalResult = [];
             finalResult.push(id_point);
             let peoples = [];
@@ -129,21 +118,46 @@ const getClassmates = async ({
                 peoples.push(getPeoples[i].Fio)
             }
             finalResult.push(peoples);
+                       */
 
-            resolve(finalResult);
-          }
+            let peoples = result.recordset;
+            let obj = {
+              id_lesson,
+              peoples
+            };
+            resolve(obj);
+          },
         );
       });
     } catch (err) {
-      reject(err)
-      //console.log('err: ', err);
+      reject(err);
     }
-  })
-}
+  });
+};
+
+const addMarks = async ({
+  oneCcode,
+  id_attendance,
+  mark
+}) => {
+  try {
+    const result = await pool_mdb.query(
+      `
+        INSERT INTO attendance_marks (oneCcode, id_attendance, mark) 
+        VALUES (?,?,?)
+      `,
+      [oneCcode, id_attendance, mark],
+    );
+    return result;
+  } catch (err) {
+    return err;
+  }
+};
 
 module.exports = {
   getNowPair,
   findPoint,
   createPoint,
-  getClassmates
-}
+  getClassmates,
+  addMarks
+};
