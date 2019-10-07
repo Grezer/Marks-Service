@@ -2,20 +2,55 @@ const router = require('express').Router()
 const moment = require('moment')
 const {
   getNowPair,
-  findPoint
+  findPoint,
+  createPoint,
+  getClassmates
 } = require('../config/attendanceFunctions')
 const pool_mdb = require('../config/config_mdb')
 const pool = require('../config/config_universityPROF')
 const sql = require('mssql')
 
 const run = async (group, pair, day) => {
-  const getPairResult = await getNowPair({
+  const [getPairResult] = await getNowPair({
     group,
     pair,
     day
   });
-  console.log('getPairResult: ', getPairResult);
+
   if (!getPairResult) return "No pairs right now";
+
+  id_subject = getPairResult.id_subject;
+  type_subject = getPairResult.type_subject;
+  const findPointResult = await findPoint({
+    group,
+    id_subject,
+    type_subject
+  });
+
+
+  if (!findPointResult) {
+    const createPointResult = await createPoint({
+      group,
+      id_subject,
+      type_subject
+    })
+    //createPointResult.insertId
+    //console.log('createPointResult: ', createPointResult.insertId);
+    //getclassmates
+  } else {
+    id_point = findPointResult.id;
+    const classmates = await getClassmates({
+      group,
+      id_point
+    })
+    console.log('classmates: ', classmates);
+  }
+
+
+  //return classmates and id point
+
+
+
 
 
 
@@ -28,7 +63,7 @@ const run = async (group, pair, day) => {
   await getNowPair
   await getNowPair
   */
-  return getPairResult
+  return getPairResult[0]
 }
 
 router.route('/getClassMates/:group').get((req, res, next) => {
@@ -90,22 +125,25 @@ router.route('/getClassMates/:group').get((req, res, next) => {
       numberOfPair = key
     }
   }
+  /*
   if (numberOfPair === -1) {
     res.send({
       response: 'No pair right now'
     });
   }
+  */
 
   numberOfPair = 1;
   const nowDay = 1; //moment().weekday() % 2 ? moment().weekday() + 7 : moment().weekday();
 
 
   const something = run(req.params.group, numberOfPair, nowDay).then(result => {
-    //console.log('something: ', result);
+    //console.log('result: ', result);
+    res.send(result);
     //console.log(result);
     // res === true
   }).catch(err => {
-    // err
+    res.send(err);
   })
 
 
