@@ -2,36 +2,64 @@ const router = require('express').Router()
 const moment = require('moment')
 const {
   getNowPair,
-  findPoint
+  findPoint,
+  createPoint,
+  getClassmates,
+  addMarks
 } = require('../config/attendanceFunctions')
 const pool_mdb = require('../config/config_mdb')
 const pool = require('../config/config_universityPROF')
 const sql = require('mssql')
 
-const run = async (group, pair, day) => {
-  const getPairResult = await getNowPair({
+const getOrCreatePoint = async (group, pair, day) => {
+  const [getPairResult] = await getNowPair({
     group,
     pair,
     day
   });
-  console.log('getPairResult: ', getPairResult);
+
   if (!getPairResult) return "No pairs right now";
 
+  id_subject = getPairResult.id_subject;
+  type_subject = getPairResult.type_subject;
+  const findPointResult = await findPoint({
+    group,
+    id_subject,
+    type_subject
+  });
 
-
-
-
-
-
-  /*
-  await getNowPair
-  await getNowPair
-  await getNowPair
-  */
-  return getPairResult
+  if (!findPointResult) {
+    const createPointResult = await createPoint({
+      group,
+      id_subject,
+      type_subject
+    })
+    id_lesson = createPointResult.insertId
+    const classmates = await getClassmates({
+      group,
+      id_lesson
+    })
+    return classmates;
+  } else {
+    id_lesson = findPointResult.id
+    const classmates = await getClassmates({
+      group,
+      id_lesson
+    })
+    return classmates;
+  }
 }
 
-router.route('/getClassMates/:group').get((req, res, next) => {
+const postMarks = async (oneCcode, id_attendance, mark) => {
+  await addMarks({
+    oneCcode,
+    id_attendance,
+    mark
+  });
+  return true;
+}
+
+router.route('/getClassmates/:group').get((req, res, next) => {
   /*
   let numberPair = -1
   if (moment().isBetween(moment('8:50', 'h:mm'), moment('10:00', 'h:mm'))) numberPair = 1
@@ -90,22 +118,22 @@ router.route('/getClassMates/:group').get((req, res, next) => {
       numberOfPair = key
     }
   }
+  /*
   if (numberOfPair === -1) {
     res.send({
       response: 'No pair right now'
     });
   }
+  */
 
   numberOfPair = 1;
   const nowDay = 1; //moment().weekday() % 2 ? moment().weekday() + 7 : moment().weekday();
 
 
-  const something = run(req.params.group, numberOfPair, nowDay).then(result => {
-    //console.log('something: ', result);
-    //console.log(result);
-    // res === true
+  startInitAttendance = getOrCreatePoint(req.params.group, numberOfPair, nowDay).then(result => {
+    res.send(result);
   }).catch(err => {
-    // err
+    res.send(err);
   })
 
 
@@ -236,22 +264,51 @@ router.route('/getClassMates/:group').get((req, res, next) => {
 })
 
 router.post('/add', (req, res, next) => {
+  const id_lesson = req.body.id_lesson
+  //oneCcode, id_attendance, mark
+  req.body.peoples.forEach(element => {
+    asd = postMarks(element.oneCcode, id_lesson, element.mark)
+      .then(result => {
+
+      }).catch(err => {
+        res.send(err);
+      })
+  });
+  res.sendStatus(200);
+
+
+
+  /*
+    asd = postMarks(req).then(result => {
+      res.send(result);
+    }).catch(err => {
+      res.send(err);
+    })
+    */
+
+  /*
   pool_mdb.getConnection((err, con) => {
     if (err) throw EvalError
+    const id_attendance = req.body.id_point;
+    console.log('id_attendance: ', id_attendance);
+
     req.body.peoples.forEach(element => {
       con.query(
         `  
           INSERT INTO attendance_marks (oneCcode, id_attendance, mark) 
           VALUES (?,?,?)   
         `,
-        [element.oneCcode, element.id_attendance, element.mark],
+        [element.oneCcode, id_attendance, element.mark],
         (error, result) => {
           if (error) throw error
+          res.sendStatus(200);
         }
       )
     })
     con.release()
   })
+*/
+
 })
 
 module.exports = router
