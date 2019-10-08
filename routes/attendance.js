@@ -59,7 +59,7 @@ const postMarks = async (oneCcode, id_attendance, mark) => {
   return true;
 }
 
-router.route('/getClassMates/:group').get((req, res, next) => {
+router.route('/getClassmates/:group').get((req, res, next) => {
   /*
   let numberPair = -1
   if (moment().isBetween(moment('8:50', 'h:mm'), moment('10:00', 'h:mm'))) numberPair = 1

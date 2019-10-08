@@ -99,6 +99,7 @@ const getClassmates = async ({
             Select Код as oneCcode, Полное_Имя as Fio
             From [UniversityPROF].[dbo].[су_ИнформацияОСтудентах]
             Where Группа = @group and Статус != 'ЗКЗакрыта' and Статус = 'Является студентом'
+            order by Полное_Имя
   
         `,
           (err, result) => {
@@ -121,6 +122,17 @@ const getClassmates = async ({
                        */
 
             let peoples = result.recordset;
+            let mark = false;
+            for (let i = 0; i < peoples.length; i++) {
+              let oneCcode = peoples[i].oneCcode;
+              let Fio = peoples[i].Fio;
+
+              peoples[i] = {
+                oneCcode,
+                Fio,
+                mark
+              }
+            }
             let obj = {
               id_lesson,
               peoples
