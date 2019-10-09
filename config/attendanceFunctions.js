@@ -3,8 +3,12 @@ const pool_mdb = require('../config/config_mdb')
 const pool = require('../config/config_universityPROF')
 const sql = require('mssql')
 
-const getNowPair = async ({ group, pair, day }) => {
-  return new Promise(function(resolve, reject) {
+const getNowPair = async ({
+  group,
+  pair,
+  day
+}) => {
+  return new Promise(function (resolve, reject) {
     try {
       pool.connect(err => {
         if (err) res.sendStatus(400)
@@ -36,9 +40,15 @@ const getNowPair = async ({ group, pair, day }) => {
   })
 }
 
-const findPoint = async ({ group, id_subject, type_subject }) => {
+const findPoint = async ({
+  group,
+  id_subject,
+  type_subject
+}) => {
   try {
-    const [[result]] = await pool_mdb.query(
+    const [
+      [result]
+    ] = await pool_mdb.query(
       `
         Select *
         From attendance
@@ -52,7 +62,11 @@ const findPoint = async ({ group, id_subject, type_subject }) => {
   }
 }
 
-const createPoint = async ({ group, id_subject, type_subject }) => {
+const createPoint = async ({
+  group,
+  id_subject,
+  type_subject
+}) => {
   console.log('group: ', group)
   console.log('id_subject: ', id_subject)
   console.log('type_subject: ', type_subject)
@@ -70,8 +84,11 @@ const createPoint = async ({ group, id_subject, type_subject }) => {
   }
 }
 
-const getClassmates = async ({ group, id_lesson }) => {
-  return new Promise(function(resolve, reject) {
+const getClassmates = async ({
+  group,
+  id_lesson
+}) => {
+  return new Promise(function (resolve, reject) {
     try {
       pool.connect(err => {
         if (err) res.sendStatus(400)
@@ -117,8 +134,8 @@ const getClassmates = async ({ group, id_lesson }) => {
               }
             }
             let obj = {
-              id_lesson,
-              peoples
+              id_lesson: id_lesson,
+              peoples: peoples
             }
             resolve(obj)
           }
@@ -130,7 +147,11 @@ const getClassmates = async ({ group, id_lesson }) => {
   })
 }
 
-const addMarks = async ({ oneCcode, id_attendance, mark }) => {
+const addMarks = async ({
+  oneCcode,
+  id_attendance,
+  mark
+}) => {
   try {
     const result = await pool_mdb.query(
       `
