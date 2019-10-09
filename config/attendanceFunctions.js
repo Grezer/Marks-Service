@@ -130,7 +130,7 @@ const getClassmates = async ({
                        */
             //just for update
             let peoples = result.recordset
-            let mark = false
+            let mark = true
             for (let i = 0; i < peoples.length; i++) {
               let oneCcode = peoples[i].oneCcode
               let Fio = peoples[i].Fio
