@@ -62,7 +62,7 @@ const findPoint = async ({
 
     console.log('result: ', result);
 
-    return 'test'
+    return result
   } catch (err) {
     console.log(err);
     return err
@@ -86,7 +86,7 @@ const createPoint = async ({
       [group, id_subject, type_subject, moment().format('YYYY-MM-DD')]
     )
     console.log('result: ', result)
-    return 'test'
+    return result
   } catch (err) {
     return err
   }
