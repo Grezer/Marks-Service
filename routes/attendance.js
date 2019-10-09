@@ -126,8 +126,8 @@ router.route('/getClassmates/:group').get((req, res, next) => {
   }
   */
 
-  numberOfPair = 1;
-  const nowDay = 1; //moment().weekday() % 2 ? moment().weekday() + 7 : moment().weekday();
+  //numberOfPair = 1;
+  const nowDay = moment().weekday() % 2 ? moment().weekday() + 7 : moment().weekday();
 
 
   startInitAttendance = getOrCreatePoint(req.params.group, numberOfPair, nowDay).then(result => {
