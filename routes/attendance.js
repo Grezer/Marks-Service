@@ -13,9 +13,9 @@ const sql = require('mssql')
 
 const getOrCreatePoint = async (group, pair, day) => {
   const [getPairResult] = await getNowPair({
-    group,
-    pair,
-    day
+    group: group,
+    pair: pair,
+    day: day
   });
 
   if (!getPairResult) return "No pairs right now";
@@ -23,9 +23,9 @@ const getOrCreatePoint = async (group, pair, day) => {
   id_subject = getPairResult.id_subject;
   type_subject = getPairResult.type_subject;
   const findPointResult = await findPoint({
-    group,
-    id_subject,
-    type_subject
+    group: group,
+    id_subject: id_subject,
+    type_subject: type_subject
   });
 
   if (!findPointResult) {

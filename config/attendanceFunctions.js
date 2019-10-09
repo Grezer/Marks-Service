@@ -8,6 +8,9 @@ const getNowPair = async ({
   pair,
   day
 }) => {
+  console.log('getNowPair group: ', group);
+  console.log('getNowPair pair: ', pair);
+  console.log('getNowPair day: ', day);
   return new Promise(function (resolve, reject) {
     try {
       pool.connect(err => {
@@ -48,6 +51,9 @@ const findPoint = async ({
   id_subject,
   type_subject
 }) => {
+  console.log('findPoint group: ', group);
+  console.log('findPoint id_subject: ', id_subject);
+  console.log('findPoint type_subject: ', type_subject);
   try {
     const [
       [result]
@@ -74,9 +80,9 @@ const createPoint = async ({
   id_subject,
   type_subject
 }) => {
-  console.log('group: ', group)
-  console.log('id_subject: ', id_subject)
-  console.log('type_subject: ', type_subject)
+  console.log('createPoint group: ', group)
+  console.log('createPoint id_subject: ', id_subject)
+  console.log('createPoint type_subject: ', type_subject)
   try {
     const [result] = await pool_mdb.query(
       `
@@ -96,6 +102,9 @@ const getClassmates = async ({
   group,
   id_lesson
 }) => {
+
+  console.log('getClassmates group: ', group);
+  console.log('getClassmates id_lesson: ', id_lesson);
   return new Promise(function (resolve, reject) {
     try {
       pool.connect(err => {
