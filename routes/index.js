@@ -33,6 +33,7 @@ router.use(
 );
 //marks/view - просмотр оценок
 //marks/change - изменение оценок
+//just for update
 router.use('/api/viewMarks', require('./viewMarks'));
 router.use('/api/changeMarks', require('./changeMarks'));
 router.use('/api/getInfo', require('./getInfo'));
