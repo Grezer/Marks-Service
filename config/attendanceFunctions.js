@@ -11,7 +11,10 @@ const getNowPair = async ({
   return new Promise(function (resolve, reject) {
     try {
       pool.connect(err => {
-        if (err) res.sendStatus(400)
+        if (err) {
+          res.sendStatus(400)
+          console.log(err);
+        }
         const request = new sql.Request(pool)
         request.input('group', sql.NVarChar, `${group}`)
         request.input('pair', sql.NVarChar, `${pair}`)
@@ -50,14 +53,18 @@ const findPoint = async ({
       [result]
     ] = await pool_mdb.query(
       `
-        Select *
-        From attendance
-        Where n_group = ? and id_subject = ? and type_subject = ? and date_lesson = ?
-        `,
+      Select *
+      From attendance
+      Where n_group = ? and id_subject = ? and type_subject = ? and date_lesson = ?
+      `,
       [group, id_subject, type_subject, moment().format('YYYY-MM-DD')]
     )
+
+    console.log('result: ', result);
+
     return result
   } catch (err) {
+    console.log(err);
     return err
   }
 }
@@ -78,6 +85,7 @@ const createPoint = async ({
         `,
       [group, id_subject, type_subject, moment().format('YYYY-MM-DD')]
     )
+    console.log('result: ', result)
     return result
   } catch (err) {
     return err
@@ -134,7 +142,7 @@ const getClassmates = async ({
               }
             }
             let obj = {
-              id_lesson: 12,
+              id_lesson: id_lesson,
               peoples: peoples
             }
             resolve(obj)
