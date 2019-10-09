@@ -134,7 +134,7 @@ const getClassmates = async ({
               }
             }
             let obj = {
-              id_lesson: id_lesson,
+              id_lesson: 12,
               peoples: peoples
             }
             resolve(obj)
