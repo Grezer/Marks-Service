@@ -142,7 +142,7 @@ const getClassmates = async ({
               }
             }
             let obj = {
-              id_lesson: id_lesson,
+              id_lesson: id_lesson == null ? 777 : id_lesson,
               peoples: peoples
             }
             resolve(obj)
