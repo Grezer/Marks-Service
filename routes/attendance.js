@@ -37,14 +37,14 @@ const getOrCreatePoint = async (group, pair, day) => {
     id_lesson = createPointResult.insertId
     const classmates = await getClassmates({
       group,
-      id_lesson
+      createPointResult
     })
     return classmates;
   } else {
     id_lesson = findPointResult.id
     const classmates = await getClassmates({
       group,
-      id_lesson
+      findPointResult
     })
     return classmates;
   }
