@@ -16,17 +16,19 @@ const getOrCreatePoint = async (group, pair, day) => {
     group: group,
     pair: pair,
     day: day
-  });
+  })
 
-  if (!getPairResult) return "No pairs right now";
+  if (!getPairResult) return 'No pairs right now'
 
-  id_subject = getPairResult.id_subject;
-  type_subject = getPairResult.type_subject;
+  id_subject = getPairResult.id_subject
+  console.log('id_subjectIntoMain: ', id_subject)
+
+  type_subject = getPairResult.type_subject
   const findPointResult = await findPoint({
     group: group,
     id_subject: id_subject,
     type_subject: type_subject
-  });
+  })
 
   if (!findPointResult) {
     const createPointResult = await createPoint({
@@ -39,14 +41,14 @@ const getOrCreatePoint = async (group, pair, day) => {
       group: group,
       createPointResult: createPointResult
     })
-    return classmates;
+    return classmates
   } else {
     id_lesson = findPointResult.id
     const classmates = await getClassmates({
       group: group,
       id_lesson: id_lesson
     })
-    return classmates;
+    return classmates
   }
 }
 
@@ -55,8 +57,8 @@ const postMarks = async (oneCcode, id_attendance, mark) => {
     oneCcode,
     id_attendance,
     mark
-  });
-  return true;
+  })
+  return true
 }
 
 router.route('/getClassmates/:group').get((req, res, next) => {
@@ -106,11 +108,12 @@ router.route('/getClassmates/:group').get((req, res, next) => {
       isActive: false,
       start: '19:20',
       finish: '20:30'
-    },
+    }
   }
 
-  numberOfPair = -1;
-  const isPair = (pair) => moment().isBetween(moment(obj[pair].start, "h:mm"), moment(obj[pair].finish, "h:mm"))
+  numberOfPair = -1
+  const isPair = pair =>
+    moment().isBetween(moment(obj[pair].start, 'h:mm'), moment(obj[pair].finish, 'h:mm'))
   for (const key in obj) {
     const pair = isPair(key)
     if (pair) {
@@ -126,21 +129,16 @@ router.route('/getClassmates/:group').get((req, res, next) => {
   }
   */
 
-  numberOfPair = 1;
+  numberOfPair = 1
   const nowDay = 1 //moment().weekday() % 2 ? moment().weekday() + 7 : moment().weekday();
 
-
-  startInitAttendance = getOrCreatePoint(req.params.group, numberOfPair, nowDay).then(result => {
-    res.send(result);
-  }).catch(err => {
-    res.send(err);
-  })
-
-
-
-
-
-
+  startInitAttendance = getOrCreatePoint(req.params.group, numberOfPair, nowDay)
+    .then(result => {
+      res.send(result)
+    })
+    .catch(err => {
+      res.send(err)
+    })
 
   /*
     nowDay = 1
@@ -162,8 +160,6 @@ router.route('/getClassmates/:group').get((req, res, next) => {
     someeeee;
 
     */
-
-
 
   /*
   pool.connect(err => {
@@ -202,10 +198,6 @@ router.route('/getClassmates/:group').get((req, res, next) => {
   })
   */
 
-
-
-
-
   /*
 
     const findPoint = async nowPair => {
@@ -238,7 +230,6 @@ router.route('/getClassmates/:group').get((req, res, next) => {
     }
   */
 
-
   /*
     function getClassmates(id) {
       if (err) res.sendStatus(400)
@@ -268,15 +259,12 @@ router.post('/add', (req, res, next) => {
   //oneCcode, id_attendance, mark
   req.body.peoples.forEach(element => {
     asd = postMarks(element.oneCcode, id_lesson, element.mark)
-      .then(result => {
-
-      }).catch(err => {
-        res.send(err);
+      .then(result => {})
+      .catch(err => {
+        res.send(err)
       })
-  });
-  res.sendStatus(200);
-
-
+  })
+  res.sendStatus(200)
 
   /*
     asd = postMarks(req).then(result => {
@@ -308,7 +296,6 @@ router.post('/add', (req, res, next) => {
     con.release()
   })
 */
-
 })
 
 module.exports = router
