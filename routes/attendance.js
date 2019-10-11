@@ -22,8 +22,8 @@ const getOrCreatePoint = async (group, pair, day) => {
 
   id_subject = getPairResult.id_subject
   console.log('id_subjectIntoMain: ', id_subject)
-
   type_subject = getPairResult.type_subject
+  console.log('type_subjectIntoMain: ', type_subject)
   const findPointResult = await findPoint({
     group: group,
     id_subject: id_subject,
@@ -31,6 +31,7 @@ const getOrCreatePoint = async (group, pair, day) => {
   })
 
   if (!findPointResult) {
+    console.log('if')
     const createPointResult = await createPoint({
       group: group,
       id_subject: id_subject,
@@ -44,6 +45,7 @@ const getOrCreatePoint = async (group, pair, day) => {
     return classmates
   } else {
     id_lesson = findPointResult.id
+    console.log('else')
     const classmates = await getClassmates({
       group: group,
       id_lesson: id_lesson
