@@ -8,15 +8,15 @@ const getNowPair = async ({
   pair,
   day
 }) => {
-  console.log('getNowPair group: ', group);
-  console.log('getNowPair pair: ', pair);
-  console.log('getNowPair day: ', day);
+  console.log('getNowPair group: ', group)
+  console.log('getNowPair pair: ', pair)
+  console.log('getNowPair day: ', day)
   return new Promise(function (resolve, reject) {
     try {
       pool.connect(err => {
         if (err) {
           res.sendStatus(400)
-          console.log(err);
+          console.log(err)
         }
         const request = new sql.Request(pool)
         request.input('group', sql.NVarChar, `${group}`)
@@ -51,9 +51,9 @@ const findPoint = async ({
   id_subject,
   type_subject
 }) => {
-  console.log('findPoint group: ', group);
-  console.log('findPoint id_subject: ', id_subject);
-  console.log('findPoint type_subject: ', type_subject);
+  console.log('findPoint group: ', group)
+  console.log('findPoint id_subject: ', id_subject)
+  console.log('findPoint type_subject: ', type_subject)
   try {
     const [
       [result]
@@ -66,11 +66,11 @@ const findPoint = async ({
       [group, id_subject, type_subject, moment().format('YYYY-MM-DD')]
     )
 
-    console.log('result: ', result);
+    console.log('result: ', result)
 
     return result
   } catch (err) {
-    console.log(err);
+    console.log(err)
     return err
   }
 }
@@ -102,9 +102,8 @@ const getClassmates = async ({
   group,
   id_lesson
 }) => {
-
-  console.log('getClassmates group: ', group);
-  console.log('getClassmates id_lesson: ', id_lesson);
+  console.log('getClassmates group: ', group)
+  console.log('getClassmates id_lesson: ', id_lesson)
   return new Promise(function (resolve, reject) {
     try {
       pool.connect(err => {
@@ -164,6 +163,34 @@ const getClassmates = async ({
   })
 }
 
+const checkAttendanceMarks = async ({
+  id_attendance,
+  classmates
+}) => {
+  console.log('id_attendance into checkAttendanceMarks: ', id_attendance)
+  console.log('classmates into checkAttendanceMarks: ', classmates);
+
+  try {
+    const [result] = await pool_mdb.query(
+      `
+      Select oneCcode, mark
+      From attendance_marks
+      Where id_attendance = ?
+      `,
+      [id_attendance]
+    )
+    result.forEach(element => {
+      classmates.peoples[classmates.peoples.findIndex(x => x.oneCcode === element.oneCcode)].mark = element.mark
+    })
+    console.log('result into checkAttendanceMarks: ', result);
+
+    return classmates
+  } catch (err) {
+    console.log(err)
+    return err
+  }
+}
+
 const addMarks = async ({
   oneCcode,
   id_attendance,
@@ -188,5 +215,6 @@ module.exports = {
   findPoint,
   createPoint,
   getClassmates,
-  addMarks
+  addMarks,
+  checkAttendanceMarks
 }

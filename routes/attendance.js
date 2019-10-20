@@ -5,7 +5,8 @@ const {
   findPoint,
   createPoint,
   getClassmates,
-  addMarks
+  addMarks,
+  checkAttendanceMarks
 } = require('../config/attendanceFunctions')
 const pool_mdb = require('../config/config_mdb')
 const pool = require('../config/config_universityPROF')
@@ -45,12 +46,16 @@ const getOrCreatePoint = async (group, pair, day) => {
     return classmates
   } else {
     id_lesson = findPointResult.id
-    console.log('else')
+    console.log('id_lesson into main: ', id_lesson);
     const classmates = await getClassmates({
       group: group,
       id_lesson: id_lesson
     })
-    return classmates
+    const classmatesWithCheck = await checkAttendanceMarks({
+      id_attendance: id_lesson,
+      classmates: classmates
+    })
+    return classmatesWithCheck
   }
 }
 
@@ -256,7 +261,7 @@ router.route('/getClassmates/:group').get((req, res, next) => {
     } */
 })
 
-router.post('/add', (req, res, next) => {
+router.post('http://localhost:4435/Values/SendData', (req, res, next) => {
   const id_lesson = req.body.id_lesson
   //oneCcode, id_attendance, mark
   req.body.peoples.forEach(element => {
