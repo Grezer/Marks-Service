@@ -265,11 +265,7 @@ router.route('/getClassmates/:group').get((req, res, next) => {
 })
 
 router.post('/add', (req, res, next) => {
-
-
-
-
-  console.log('req.body: ', req.body);
+  console.log('req.body: ', req.body.id_lesson);
   const id_lesson = req.body.id_lesson
   //oneCcode, id_attendance, mark
   req.body.peoples.forEach(element => {

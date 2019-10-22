@@ -210,11 +210,33 @@ const addMarks = async ({
   }
 }
 
+
+const updateMarks = async ({
+  oneCcode,
+  id_attendance,
+  mark
+}) => {
+  try {
+    const result = await pool_mdb.query(
+      `
+        UPDATE attendance_marks
+        SET mark = ?
+        WHERE oneCcode = ? and id_attendance = ?        
+      `,
+      [mark, oneCcode, id_attendance]
+    )
+    return result
+  } catch (err) {
+    return err
+  }
+}
+
 module.exports = {
   getNowPair,
   findPoint,
   createPoint,
   getClassmates,
   addMarks,
-  checkAttendanceMarks
+  checkAttendanceMarks,
+  updateMarks
 }
