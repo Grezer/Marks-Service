@@ -17,7 +17,10 @@ const getOrCreatePoint = async (group, pair, day) => {
     day: day
   })
 
-  if (!getPairResult) return 'No pairs right now'
+  if (!getPairResult) {
+    console.log('No pairs right now: ');
+    return 'No pairs right now'
+  }
 
   id_subject = getPairResult.id_subject
   console.log('id_subjectIntoMain: ', id_subject)
