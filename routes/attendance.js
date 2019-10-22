@@ -6,11 +6,9 @@ const {
   createPoint,
   getClassmates,
   addMarks,
-  checkAttendanceMarks
+  checkAttendanceMarks,
+  updateMarks
 } = require('../config/attendanceFunctions')
-const pool_mdb = require('../config/config_mdb')
-const pool = require('../config/config_universityPROF')
-const sql = require('mssql')
 
 const getOrCreatePoint = async (group, pair, day) => {
   const [getPairResult] = await getNowPair({
@@ -41,7 +39,7 @@ const getOrCreatePoint = async (group, pair, day) => {
     id_lesson = createPointResult.insertId
     const classmates = await getClassmates({
       group: group,
-      createPointResult: createPointResult
+      id_lesson: id_lesson
     })
     return classmates
   } else {
@@ -67,6 +65,8 @@ const postMarks = async (oneCcode, id_attendance, mark) => {
   })
   return true
 }
+
+
 
 router.route('/getClassmates/:group').get((req, res, next) => {
   /*
@@ -136,8 +136,8 @@ router.route('/getClassmates/:group').get((req, res, next) => {
   }
   */
 
-  numberOfPair = 1
-  const nowDay = 1 //moment().weekday() % 2 ? moment().weekday() + 7 : moment().weekday();
+  //numberOfPair = 1
+  const nowDay = moment().weekday() % 2 ? moment().weekday() + 7 : moment().weekday();
 
   startInitAttendance = getOrCreatePoint(req.params.group, numberOfPair, nowDay)
     .then(result => {
@@ -261,7 +261,12 @@ router.route('/getClassmates/:group').get((req, res, next) => {
     } */
 })
 
-router.post('http://localhost:4435/Values/SendData', (req, res, next) => {
+router.post('/add', (req, res, next) => {
+
+
+
+
+  console.log('req.body: ', req.body);
   const id_lesson = req.body.id_lesson
   //oneCcode, id_attendance, mark
   req.body.peoples.forEach(element => {

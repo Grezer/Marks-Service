@@ -19,6 +19,10 @@ app.use(
     extended: false,
   }),
 )
+
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
 app.use(bodyParser.json())
 
 const isProduction = process.env.NODE_ENV === 'production'
