@@ -191,6 +191,30 @@ const checkAttendanceMarks = async ({
   }
 }
 
+const checkAttendanceMarksCount = async ({
+  id_attendance
+}) => {
+  try {
+    const [
+      [{
+        count
+      }]
+    ] = await pool_mdb.query(
+      `
+      Select count(*) as count
+      From attendance_marks
+      Where id_attendance = ?
+      `,
+      [id_attendance]
+    )
+
+    return count
+  } catch (err) {
+    console.log(err)
+    throw err;
+  }
+}
+
 const addMarks = async ({
   oneCcode,
   id_attendance,
@@ -238,5 +262,6 @@ module.exports = {
   getClassmates,
   addMarks,
   checkAttendanceMarks,
-  updateMarks
+  updateMarks,
+  checkAttendanceMarksCount
 }

@@ -7,7 +7,8 @@ const {
   getClassmates,
   addMarks,
   checkAttendanceMarks,
-  updateMarks
+  updateMarks,
+  checkAttendanceMarksCount
 } = require('../config/attendanceFunctions')
 
 const getOrCreatePoint = async (group, pair, day) => {
@@ -69,7 +70,14 @@ const postMarks = async (oneCcode, id_attendance, mark) => {
   return true
 }
 
-
+const changeMarks = async (oneCcode, id_attendance, mark) => {
+  await updateMarks({
+    oneCcode,
+    id_attendance,
+    mark
+  })
+  return true
+}
 
 router.route('/getClassmates/:group').get((req, res, next) => {
   /*
@@ -264,18 +272,55 @@ router.route('/getClassmates/:group').get((req, res, next) => {
     } */
 })
 
+const nameItLater = async ({
+  id_lesson,
+  peoples
+}) => {
+  const count = await checkAttendanceMarksCount({
+    id_attendance: id_lesson
+  })
+
+  const promises = []
+  if (count === 0) {
+    // тебе тут надо эти postMarks добавлять в массив
+    // затем делать Promise.all(твояПеременнаяСМассивомPostMarks)
+    // и потом уже res.sendStatus(200) подобное возвращать клиенту (или что там возвращаешь)
+
+    peoples.forEach(element => {
+      promises.push(postMarks(element.oneCcode, id_lesson, element.mark))
+    })
+  } else {
+    peoples.forEach(element => {
+      promises.push(changeMarks(element.oneCcode, id_lesson, element.mark))
+    })
+  }
+
+  try {
+    await Promise.all(promises)
+    return true // ну или что надо тут вернуть
+  } catch (err) {
+    throw new Error(err)
+  }
+
+}
+
 router.post('/add', (req, res, next) => {
   console.log('req.body: ', req.body.id_lesson);
-  const id_lesson = req.body.id_lesson
-  //oneCcode, id_attendance, mark
-  req.body.peoples.forEach(element => {
-    asd = postMarks(element.oneCcode, id_lesson, element.mark)
-      .then(result => {})
-      .catch(err => {
-        res.send(err)
-      })
+  // const {id_lesson, peoples} = req.body
+
+  nameItLater({
+    ...req.body
+  }).then(result => {
+    if (result) res.sendStatus(200)
+  }).catch(err => {
+    //log
+    // крч тут верни, что надо)
+    res.send({
+      code: 400, //так ведь можно? 
+      msg: "Add marks error"
+    });
   })
-  res.sendStatus(200)
+
 
   /*
     asd = postMarks(req).then(result => {
