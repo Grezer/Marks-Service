@@ -19,7 +19,7 @@ const getOrCreatePoint = async (group, pair, day) => {
   })
 
   if (!getPairResult) {
-    console.log('No pairs right now: ');
+    console.log('No pairs right now: ')
     return 'No pairs right now'
   }
 
@@ -48,7 +48,7 @@ const getOrCreatePoint = async (group, pair, day) => {
     return classmates
   } else {
     id_lesson = findPointResult.id
-    console.log('id_lesson into main: ', id_lesson);
+    console.log('id_lesson into main: ', id_lesson)
     const classmates = await getClassmates({
       group: group,
       id_lesson: id_lesson
@@ -147,8 +147,8 @@ router.route('/getClassmates/:group').get((req, res, next) => {
   }
   */
 
-  numberOfPair = 1
-  const nowDay = 1; //moment().weekday() % 2 ? moment().weekday() + 7 : moment().weekday();
+  //numberOfPair = 1
+  const nowDay = moment().weekday() % 2 ? moment().weekday() + 7 : moment().weekday()
 
   startInitAttendance = getOrCreatePoint(req.params.group, numberOfPair, nowDay)
     .then(result => {
@@ -272,10 +272,7 @@ router.route('/getClassmates/:group').get((req, res, next) => {
     } */
 })
 
-const nameItLater = async ({
-  id_lesson,
-  peoples
-}) => {
+const nameItLater = async ({ id_lesson, peoples }) => {
   const count = await checkAttendanceMarksCount({
     id_attendance: id_lesson
   })
@@ -301,26 +298,26 @@ const nameItLater = async ({
   } catch (err) {
     throw new Error(err)
   }
-
 }
 
 router.post('/add', (req, res, next) => {
-  console.log('req.body: ', req.body.id_lesson);
+  console.log('req.body: ', req.body.id_lesson)
   // const {id_lesson, peoples} = req.body
 
   nameItLater({
     ...req.body
-  }).then(result => {
-    if (result) res.sendStatus(200)
-  }).catch(err => {
-    //log
-    // крч тут верни, что надо)
-    res.send({
-      code: 400, //так ведь можно? 
-      msg: "Add marks error"
-    });
   })
-
+    .then(result => {
+      if (result) res.sendStatus(200)
+    })
+    .catch(err => {
+      //log
+      // крч тут верни, что надо)
+      res.send({
+        code: 400, //так ведь можно?
+        msg: 'Add marks error'
+      })
+    })
 
   /*
     asd = postMarks(req).then(result => {
