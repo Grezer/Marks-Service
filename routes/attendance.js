@@ -129,12 +129,7 @@ router.route('/getClassmates/:group').get((req, res, next) => {
     }
   }
 
-  console.log(1)
-  console.log(
-    'moment().format(MMMM Do YYYY, h:mm:ss a): ',
-    moment().format('MMMM Do YYYY, h:mm:ss a')
-  )
-  console.log(1)
+  console.log('moment()', moment().format('MMMM Do YYYY, h:mm:ss a'))
   //console.log(moment())
   numberOfPair = -1
   const isPair = pair =>
