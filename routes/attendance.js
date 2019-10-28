@@ -129,6 +129,13 @@ router.route('/getClassmates/:group').get((req, res, next) => {
     }
   }
 
+  console.log(1)
+  console.log(
+    'moment().format(MMMM Do YYYY, h:mm:ss a): ',
+    moment().format('MMMM Do YYYY, h:mm:ss a')
+  )
+  console.log(1)
+  //console.log(moment())
   numberOfPair = -1
   const isPair = pair =>
     moment().isBetween(moment(obj[pair].start, 'h:mm'), moment(obj[pair].finish, 'h:mm'))
